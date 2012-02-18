@@ -12,11 +12,11 @@ class CustomDecorator extends Decorator {
 class ComplexDecorator extends Decorator {
 	public $name = "Test";
 	public function id() {
-		$id = $this->raw("id");
+		$id = $this->_raw("id");
 		return "<p>{$id}</p>";
 	}
 	public function content() {
-		$content = $this->raw("content");
+		$content = $this->_raw("content");
 		return "<p>{$content}</p>";
 	}
 }

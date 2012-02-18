@@ -36,7 +36,7 @@ Then in the decorator class (ProductDecorator in View/Decorator) you would defin
 
 	// ProductDecorator Class
 	public function price() {
-		$price = $this->raw("price");
+		$price = $this->_raw("price");
 		$class = "greenColor";
 		if ($price <= 10) {
 			$class = "redColor";
@@ -62,6 +62,8 @@ By default this method will check the data passed in to see if the key (the clas
 **Decorator::raw(string $key)**
 
 You have access to the keys in your model record array by doing something like this: `$decorator->price()` (by using __call()). In the case of when the `price()` method is actually defined with some custom logic, you can use the `raw()` method to get at the original value.
+
+Note in the examples above, I used the `_raw()` method. The `raw()` method uses the `_raw()` method internally. This way you could overwrite the `raw()` method if you need to, and then make a different way of getting at the `_raw()` protected method.
 
 ## TODOs
 

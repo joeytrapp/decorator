@@ -69,6 +69,19 @@ class Decorator extends Object {
 	}
 
 	/**
+	 * By default this is available to return the raw value from the model
+	 * array. The logic is in the _raw protected method so that the raw
+	 * method can be overwritten if you have a key called raw. 
+	 * 
+	 * @param mixed $key 
+	 * @access public
+	 * @return void
+	 */
+	public function raw($key) {
+		return $this->_raw($key);
+	}
+
+	/**
 	 * Tries to return the key from the $this->model array. Not checking if the
 	 * key exists first so that the undefined index exception will get thrown.
 	 * May convert and throw my on exception here. 
@@ -77,8 +90,8 @@ class Decorator extends Object {
 	 * @access public
 	 * @return mixed
 	 */
-	public function raw($key) {
-		if (array_key_exists($key, $this->model)) {
+	protected function _raw($key = null) {
+		if ($key && array_key_exists($key, $this->model)) {
 			return $this->model[$key];
 		}
 		throw new Exception("Undefined index: {$key}");
