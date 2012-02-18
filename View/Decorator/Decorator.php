@@ -10,9 +10,7 @@
  * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
  */
 
-App::uses("Object", "Core");
-
-class Decorator extends Object {
+class Decorator {
 
 	/**
 	 * name 
@@ -40,7 +38,7 @@ class Decorator extends Object {
 	 */
 	public function __construct($data = array(), $parse = true) {
 		if (!$this->name) {
-			$this->name = str_replace("Decorator", "", get_class($this));
+			$this->name = preg_replace("/Decorator$/", "", get_class($this));
 		}
 		if ($parse) {
 			$this->model = $this->parseData($data);

@@ -1,16 +1,16 @@
 <?php
 
-require(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "Decorator.php");
+require_once(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "Decorator.php");
 
-class TestDecorator extends Decorator {
+class DecoratorTestDecorator extends Decorator {
 }
 
-class CustomDecorator extends Decorator {
+class DecoratorTestCustomDecorator extends Decorator {
 	public $name = "Something";
 }
 
-class ComplexDecorator extends Decorator {
-	public $name = "Test";
+class DecoratorTestComplexDecorator extends Decorator {
+	public $name = "DecoratorTest";
 	public function id() {
 		$id = $this->_raw("id");
 		return "<p>{$id}</p>";
@@ -23,65 +23,65 @@ class ComplexDecorator extends Decorator {
 
 class DecoratorTest extends CakeTestCase {
 
-	public $data = array("Test" => array("id" => 5, "content" => "Some string"));
+	public $data = array("DecoratorTest" => array("id" => 5, "content" => "Some string"));
 
 	public function testNewDecoratorBuildsModelName() {
-		$d = new TestDecorator();
-		$this->assertEquals($d->name, "Test");
+		$d = new DecoratorTestDecorator();
+		$this->assertEquals("DecoratorTest", $d->name);
 	}
 
 	public function testDecoratorCanDefineDifferentModelName() {
-		$d = new CustomDecorator();
-		$this->assertEquals($d->name, "Something");
+		$d = new DecoratorTestCustomDecorator();
+		$this->assertEquals("Something", $d->name);
 	}
 
 	public function testDecoratorCanImportDataForItsModelName() {
-		$d = new TestDecorator($this->data);
-		$this->assertEquals($d->model, $this->data["Test"]);
+		$d = new DecoratorTestDecorator($this->data);
+		$this->assertEquals($this->data["DecoratorTest"], $d->model);
 	}
 
 	public function testDecoratorWillAssignAllDataIfNoMatch() {
-		$d = new CustomDecorator($this->data);
-		$this->assertEquals($d->model, $this->data);
+		$d = new DecoratorTestCustomDecorator($this->data);
+		$this->assertEquals($this->data, $d->model);
 	}
 
 	public function testDecoratorWillReturnDataFromUndefinedMethods() {
-		$d = new TestDecorator($this->data);
-		$this->assertEquals($d->id(), $this->data["Test"]["id"]);
-		$this->assertEquals($d->content(), $this->data["Test"]["content"]);
+		$d = new DecoratorTestDecorator($this->data);
+		$this->assertEquals($this->data["DecoratorTest"]["id"], $d->id());
+		$this->assertEquals($this->data["DecoratorTest"]["content"], $d->content());
 	}
 
 	public function testDecoratorCanDefineMethodsForDataKeys() {
-		$d = new ComplexDecorator($this->data);
+		$d = new DecoratorTestComplexDecorator($this->data);
 		$this->assertTags($d->id(), array('p' => array(), 5, '/p'));
 		$this->assertTags($d->content(), array('p' => array(), "Some string", '/p'));
 	}
 
 	public function testMethodCallToNonExistingKeyWillException() {
-		$d = new TestDecorator($this->data);
+		$d = new DecoratorTestDecorator($this->data);
 		try {
 			$d->missing();
 		} catch (Exception $e) {
-			$this->assertEquals($e->getMessage(), "No method missing() defined");
+			$this->assertEquals("No method missing() defined", $e->getMessage());
 			return;
 		}
 		$this->fail("An exception should have been raised");
 	}
 	
 	public function testRawCallWithInvalidKeyRaisesException() {
-		$d = new TestDecorator($this->data);
+		$d = new DecoratorTestDecorator($this->data);
 		try {
 			$d->raw("missing");
 		} catch (Exception $e) {
-			$this->assertEquals($e->getMessage(), "Undefined index: missing");
+			$this->assertEquals("Undefined index: missing", $e->getMessage());
 			return;
 		}
 		$this->fail("An exception should have been raised");
 	}
 
 	public function testCanCreateDecoratorWithoutParsing() {
-		$d = new CustomDecorator($this->data, false);
-		$this->assertEquals($d->raw("Test"), $this->data["Test"]);
+		$d = new DecoratorTestCustomDecorator($this->data, false);
+		$this->assertEquals($this->data["DecoratorTest"], $d->raw("DecoratorTest"));
 	}
 
 }

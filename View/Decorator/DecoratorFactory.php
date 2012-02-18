@@ -9,7 +9,7 @@
  * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
  */
 
-require(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "Decorator.php");
+require_once(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "Decorator.php");
 
 class DecoratorFactory {
 
