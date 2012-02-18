@@ -6,8 +6,12 @@ This is an experimental plugin to wrap `Model::find()` results in objects. These
 
 ### Current setup
 
+In the controller you'd find a product record and set that to the view.
+
 	// Controller
 	$this->set("product", $this->Product->read(null, $id));
+
+If you need to display a different class for in the span tag that wraps the price, you'd have to have some view logic.
 
 	// View
 	<?php if ($product["Product"]["price"] <= 10): ?>
@@ -22,9 +26,13 @@ This is an experimental plugin to wrap `Model::find()` results in objects. These
 
 ### Using Decorators
 
+Using decorators would start at the controller. Creating a decorator using the `DecoratorComponent::create()` method takes a decorator name and an array of data. The method will return an instance of the decorator class.
+
 	// Controller
 	$product = $this->Decorator->create("Product", $this->Product->read(null, $id));
 	$this->set(compact("product"));
+
+Then in the decorator class (ProductDecorator in View/Decorator) you would define a method and will perform the logic and return the HTML string with the proper class.
 
 	// ProductDecorator Class
 	public function price() {
@@ -38,9 +46,22 @@ This is an experimental plugin to wrap `Model::find()` results in objects. These
 		return "<span class=\"{$class}\">{$price}</span>";
 	}
 
+Now all of the logic is removed from the view and all you've got to render is the result of the method call.
+
 	// View
 	<?php echo $product->price(); ?>
 
+## Decorator Class Methods
+
+There are 2 method currently in the Decorator base class.
+
+**Decorator::parseData(array $data)**
+
+By default this method will check the data passed in to see if the key (the class name without Decorator) exists, and returns it. In the case of $data = array("ModelName" => array("id" => 2)), and the decorator class name is ModelNameDecorator, the method will return array("id" => 2). The return value from this method is assigned to the `Decorator::model` property. Overwrite this method to parse the data in your own custom way.
+
+**Decorator::raw(string $key)**
+
+You have access to the keys in your model record array by doing something like this: `$decorator->price()` (by using __call()). In the case of when the `price()` method is actually defined with some custom logic, you can use the `raw()` method to get at the original value.
 
 ## TODOs
 
