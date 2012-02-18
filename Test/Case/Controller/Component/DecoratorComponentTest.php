@@ -10,7 +10,7 @@ class DecoratorComponentTestDecorator extends Decorator {
 }
 
 class DecoratorComponentTestController extends Controller {
-
+	public $helpers = array();
 }
 
 class DecoratorComponentTest extends CakeTestCase {
@@ -36,6 +36,12 @@ class DecoratorComponentTest extends CakeTestCase {
 	public function tearDown() {
 		parent::tearDown();
 		unset($this->Controller, $this->Decorator);
+	}
+
+	public function testHelperIsAddedToControllerDuringStartup() {
+		$this->assertEmpty($this->Controller->helpers);
+		$this->Decorator->startup($this->Controller);
+		$this->assertContains("Decorator.Decorator", $this->Controller->helpers);
 	}
 
 	public function testCreateReturnsBaseDecoratorIfClassNotFound() {
