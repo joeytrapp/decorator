@@ -51,6 +51,8 @@ Now all of the logic is removed from the view and all you've got to render is th
 	// View
 	<?php echo $product->price(); ?>
 
+There is also a method on the component called `build()`, and would be used when you've got more than one result (from `Model::find("all")` for instance).
+
 ## Decorator Class Methods
 
 There are 2 method currently in the Decorator base class.
