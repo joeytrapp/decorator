@@ -58,3 +58,4 @@ class DecoratorTest extends CakeTestCase {
 	}
 
 }
+
