@@ -38,11 +38,15 @@ class Decorator extends Object {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($data = array()) {
+	public function __construct($data = array(), $parse = true) {
 		if (!$this->name) {
 			$this->name = str_replace("Decorator", "", get_class($this));
 		}
-		$this->model = $this->parseData($data);
+		if ($parse) {
+			$this->model = $this->parseData($data);
+		} else {
+			$this->model = $data;
+		}
 	}
 
 	/**
@@ -74,7 +78,10 @@ class Decorator extends Object {
 	 * @return mixed
 	 */
 	public function raw($key) {
-		return $this->model[$key];
+		if (array_key_exists($key, $this->model)) {
+			return $this->model[$key];
+		}
+		throw new Exception("Undefined index: {$key}");
 	}
 
 	/**
@@ -89,7 +96,7 @@ class Decorator extends Object {
 		if (array_key_exists($method, $this->model)) {
 			return $this->model[$method];
 		}
-		throw new Exception(get_class($this) . " can not handle {$method}()");
+		throw new Exception("No method {$method}() defined");
 	}
 
 }

@@ -57,5 +57,32 @@ class DecoratorTest extends CakeTestCase {
 		$this->assertTags($d->content(), array('p' => array(), "Some string", '/p'));
 	}
 
+	public function testMethodCallToNonExistingKeyWillException() {
+		$d = new TestDecorator($this->data);
+		try {
+			$d->missing();
+		} catch (Exception $e) {
+			$this->assertEquals($e->getMessage(), "No method missing() defined");
+			return;
+		}
+		$this->fail("An exception should have been raised");
+	}
+	
+	public function testRawCallWithInvalidKeyRaisesException() {
+		$d = new TestDecorator($this->data);
+		try {
+			$d->raw("missing");
+		} catch (Exception $e) {
+			$this->assertEquals($e->getMessage(), "Undefined index: missing");
+			return;
+		}
+		$this->fail("An exception should have been raised");
+	}
+
+	public function testCanCreateDecoratorWithoutParsing() {
+		$d = new CustomDecorator($this->data, false);
+		$this->assertEquals($d->raw("Test"), $this->data["Test"]);
+	}
+
 }
 
