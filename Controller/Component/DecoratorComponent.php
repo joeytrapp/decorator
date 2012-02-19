@@ -3,11 +3,9 @@
  * DecoratorComponent 
  * 
  * @uses Component
- * @package 
+ * @package Controller.Component
  * @version $id$
- * @copyright 1997-2005 The PHP Group
- * @author Tobias Schlitt <toby@php.net> 
- * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
+ * @author Joey Trapp <jtrapp07@gmail.com> 
  */
 
 require_once(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "DecoratorFactory.php");

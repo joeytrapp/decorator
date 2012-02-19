@@ -2,13 +2,12 @@
 /**
  * Decorator 
  * 
- * @uses Object
- * @package 
+ * @package View.Decorator
  * @version $id$
- * @copyright 1997-2005 The PHP Group
- * @author Tobias Schlitt <toby@php.net> 
- * @license PHP Version 3.0 {@link http://www.php.net/license/3_0.txt}
+ * @author Joey Trapp <jtrapp07@gmail.com> 
  */
+
+require_once(App::pluginPath("Decorator") . "View" . DS . "Decorator" . DS . "DecoratorFactory.php");
 
 class Decorator {
 
@@ -33,6 +32,7 @@ class Decorator {
 	 * then calls the parseData method to parse the passed in array of data.
 	 * 
 	 * @param array $data 
+	 * @param mixed $parse
 	 * @access public
 	 * @return void
 	 */
@@ -40,11 +40,7 @@ class Decorator {
 		if (!$this->name) {
 			$this->name = preg_replace("/Decorator$/", "", get_class($this));
 		}
-		if ($parse) {
-			$this->model = $this->parseData($data);
-		} else {
-			$this->model = $data;
-		}
+		$this->model = $this->parseData($data, $parse);
 	}
 
 	/**
@@ -53,17 +49,68 @@ class Decorator {
 	 * parsing logic. 
 	 * 
 	 * @param array $data 
+	 * @param mixed $parse
 	 * @access public
 	 * @return array
 	 */
-	public function parseData($data = array()) {
+	public function parseData($data = array(), $parse = true) {
 		$ret = array();
-		if (array_key_exists($this->name, $data)) {
-			$ret = $data[$this->name];
+		$name = $this->name;
+		if (is_string($parse)) {
+			$name = $parse;
+		}
+		if ($parse) {
+			if (array_key_exists($name, $data)) {
+				$ret = $data[$name];
+				unset($data[$name]);
+				// Builds sibling associations
+				$this->_buildAssociations($data);
+				// Builds nested associations
+				$this->_buildAssociations($ret);
+			} else {
+				// Builds nested associations and returns array of non model key/values
+				$data = $this->_buildAssociations($data);
+				$ret = $data;
+			}
 		} else {
 			$ret = $data;
 		}
 		return $ret;
+	}
+
+	/**
+	 * Takes an array of data loops over them. If any of the keys match a model
+	 * name regex, then the value for that key is inspected. If the value is an
+	 * array and they keys are numeric, then the DecoratorFactory::build() method
+	 * is called. If the value is array and the keys are not numeric then the
+	 * DecoratorFactory::create() method is called. The results of build() or
+	 * create() are assigned to properties of the model name on this decorator.
+	 * All keys that are used to create decorators are unset from the data and
+	 * the data array is returned.
+	 * 
+	 * @param mixed $data 
+	 * @access protected
+	 * @return array
+	 */
+	protected function _buildAssociations($data) {
+		$keys = array_keys($data);
+		for ($i = 0; $i < count($keys); $i++) {
+			$key = $keys[$i];
+			$value = $data[$key];
+			if (
+				preg_match("/^[A-Z]{1}[a-zA-Z]+/", $key) &&
+				is_array($value) &&
+				!empty($value)
+			) {
+				if (preg_match("/[0-9]+/", key($value))) {
+					$this->{$key} = DecoratorFactory::build($key, $value, $key);
+				} else {
+					$this->{$key} = DecoratorFactory::create($key, $value, $key);
+				}
+				unset($data[$key]);
+			}
+		}
+		return $data;
 	}
 
 	/**

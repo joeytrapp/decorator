@@ -40,9 +40,42 @@ class DecoratorTest extends CakeTestCase {
 		$this->assertEquals($this->data["DecoratorTest"], $d->model);
 	}
 
-	public function testDecoratorWillAssignAllDataIfNoMatch() {
+	public function testDecoratorWillNotAssignAllDataIfNoMatch() {
 		$d = new DecoratorTestCustomDecorator($this->data);
-		$this->assertEquals($this->data, $d->model);
+		$this->assertEmpty($d->model);
+	}
+
+	public function testDecoratorCanTakeASecondArgToDefineTheParseName() {
+		$d = new DecoratorTestCustomDecorator($this->data, "DecoratorTest");
+		$this->assertEquals("DecoratorTestCustomDecorator", get_class($d));
+		$this->assertEquals(5, $d->id());
+	}
+
+	public function testDecoratorWillAutoCreateSiblingObjects() {
+		$data = array(
+			"TestOne" => array("id" => 1, "content" => "Sample content"),
+			"TestTwo" => array("id" => 2, "content" => "Sample content")
+		);
+		$d = new Decorator($data, "TestOne");
+		$this->assertEquals(1, $d->id());
+		$this->assertEquals(2, $d->TestTwo->id());
+		$d = new Decorator($data, "TestTwo");
+		$this->assertEquals(2, $d->id());
+		$this->assertEquals(1, $d->TestOne->id());
+	}
+
+	public function testDecoratorWillAutoCreateNestedObjects() {
+		$data = array(
+			"TestOne" => array("id" => 1, "content" => "Sample content"),
+			"TestTwo" => array(
+				array("id" => 2, "content" => "Different content"),
+				array("id" => 3, "content" => "Something content")
+			)
+		);
+		$d = new Decorator($data, "TestOne");
+		$this->assertEquals(1, $d->id());
+		$this->assertEquals(2, count($d->TestTwo));
+		$this->assertEquals("Something content", $d->TestTwo[1]->content());
 	}
 
 	public function testDecoratorWillReturnDataFromUndefinedMethods() {

@@ -60,7 +60,8 @@ class DecoratorComponentTest extends CakeTestCase {
 		$d = $this->Decorator->build("NoExist", $data);
 		$this->assertEquals(2, count($d));
 		$this->assertEquals("Decorator", get_class($d[0]));
-		$this->assertEquals($this->data["DecoratorComponentTest"], $d[1]->raw("DecoratorComponentTest"));
+		$this->assertEmpty($d[0]->model);
+		$this->assertEquals(5, $d[0]->DecoratorComponentTest->id());
 	}
 
 	public function testBuildReturnsListOfTheSameSizeValidName() {
