@@ -23,7 +23,7 @@ class DecoratorFactory {
 	 */
 	public static function create($name, $data = array(), $parse = true) {
 		$class = $name . "Decorator";
-		$path = APP . "View" . DS . "Decorator";
+		$path = APP . "View" . DS . "Decorator" . DS;
 		if (class_exists($class)) {
 			return new $class($data, $parse);
 		} else if (file_exists($path . $class . ".php")) {
