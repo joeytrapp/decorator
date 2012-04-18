@@ -102,11 +102,19 @@ class Decorator {
 				is_array($value) &&
 				!empty($value)
 			) {
-				if (preg_match("/[0-9]+/", key($value))) {
-					$this->{$key} = DecoratorFactory::build($key, $value, $key);
-				} else {
-					$this->{$key} = DecoratorFactory::create($key, $value, $key);
+				$_key = $key;
+				if (preg_match("/^(Parent){1}(.*)/", $key)) {
+					$_key = str_replace("Parent", "", $key);
 				}
+				if (preg_match("/^(Child){1}(.*)/", $key)) {
+					$_key = str_replace("Child", "", $key);
+				}
+				if (preg_match("/[0-9]+/", key($value))) {
+					$method = "build";
+				} else {
+					$method = "create";
+				}
+				$this->{$key} = DecoratorFactory::$method($_key, $value, $key);
 				unset($data[$key]);
 			}
 		}
